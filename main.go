@@ -3,6 +3,8 @@ package main
 import (
 	// "fmt"
 	"database/sql"
+	"time"
+	// "fmt"
 	"go-scratch/internal/database"
 	"log"
 	"net/http"
@@ -20,7 +22,12 @@ type apiConfig struct {
 }
 
 func main() {
-	// fmt.Println("hello go")
+	// feed, err := urlToFeed("https://wagslane.dev/index.xml")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(feed)
+
 
 	godotenv.Load()
 
@@ -39,9 +46,12 @@ func main() {
 		log.Fatal("Can't connect to database")
 	}
 
+	db := database.New(conn)
 	apiCfg := apiConfig{
 		DB:  database.New(conn),
 	}
+
+	go startScraping(db, 10, time.Minute)
 
 	router := chi.NewRouter()
 
